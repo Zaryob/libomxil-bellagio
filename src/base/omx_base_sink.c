@@ -76,8 +76,10 @@ void* omx_base_sink_BufferMgmtFunction (void* param) {
   OMX_BOOL                        isInputBufferNeeded         = OMX_TRUE;
   int                             inBufExchanged              = 0;
 
+#if defined(__linux__)
   omx_base_sink_Private->bellagioThreads->nThreadBufferMngtID = (long int)syscall(__NR_gettid);
   DEBUG(DEB_LEV_SIMPLE_SEQ, "In %s the thread ID is %i\n", __func__, (int)omx_base_sink_Private->bellagioThreads->nThreadBufferMngtID);
+#endif
 
   DEBUG(DEB_LEV_FUNCTION_NAME, "In %s \n", __func__);
   while(omx_base_component_Private->state == OMX_StateIdle || omx_base_component_Private->state == OMX_StateExecuting ||  omx_base_component_Private->state == OMX_StatePause ||

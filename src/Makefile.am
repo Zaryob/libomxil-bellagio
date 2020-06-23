@@ -7,7 +7,7 @@ bin_PROGRAMS = omxregister-bellagio
 omxregister_bellagio_SOURCES = omxregister.c common.c common.h
 omxregister_bellagio_CFLAGS = -DOMXILCOMPONENTSPATH=\"$(plugindir)/\" \
 			      -I$(top_srcdir)/include
-omxregister_bellagio_LDFLAGS = -lomxil-bellagio -L$(builddir)
+omxregister_bellagio_LDADD = libomxil-bellagio.la
 
 lib_LTLIBRARIES = libomxil-bellagio.la
 libomxil_bellagio_la_SOURCES = component_loader.h \

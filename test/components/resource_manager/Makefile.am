@@ -1,7 +1,7 @@
 check_PROGRAMS = omxrmtest omxprioritytest
 
-bellagio_LDADD = -lomxil-bellagio
-common_CFLAGS = -I$(top_srcdir)/test/components/common -I$(includedir)
+bellagio_LDADD = $(top_builddir)/src/libomxil-bellagio.la
+common_CFLAGS = -I$(top_builddir)/test/components/common -I$(top_builddir)/include -I$(top_builddir)/src
 
 omxrmtest_SOURCES = omxrmtest.c omxrmtest.h
 omxrmtest_LDADD = $(bellagio_LDADD) -lpthread

@@ -88,7 +88,6 @@ int main(int argc, char** argv) {
   int gain[4];
   int argn_dec;
   int index_files = 0, index_gain = 0;
-  OMX_U32 srate=0,nchannel=0;
   OMX_ERRORTYPE err;
   char c;
 
@@ -155,10 +154,8 @@ int main(int argc, char** argv) {
           flagIsOutputExpected = 0;
           flagOutputReceived = 1;
         } else if (flagSampleRate) {
-          srate = (int)atoi(argv[argn_dec]);
           flagSampleRate = 0;
         } else if (flagChannel) {
-          nchannel = (int)atoi(argv[argn_dec]);
           flagChannel = 0;
         } else {
         	if (index_files>3) {
@@ -506,7 +503,6 @@ OMX_ERRORTYPE audiomixerEmptyBufferDone(
   OMX_PTR pAppData,
   OMX_BUFFERHEADERTYPE* pBuffer) {
 
-  OMX_ERRORTYPE err;
   int data_read;
 
 
@@ -532,7 +528,7 @@ OMX_ERRORTYPE audiomixerEmptyBufferDone(
       pBuffer->nFlags = OMX_BUFFERFLAG_EOS;
       bEOS[pBuffer->nInputPortIndex]=OMX_TRUE;
       DEBUG(DEB_LEV_SIMPLE_SEQ, "In %s Sending EOS for Stream %i\n", __func__, (int)pBuffer->nInputPortIndex);
-      err = OMX_EmptyThisBuffer(hComponent, pBuffer);
+      OMX_EmptyThisBuffer(hComponent, pBuffer);
       return OMX_ErrorNone;
     }
   } else {
@@ -541,7 +537,7 @@ OMX_ERRORTYPE audiomixerEmptyBufferDone(
   }
   if(!bEOS[pBuffer->nInputPortIndex]) {
     DEBUG(DEB_LEV_FULL_SEQ, "Empty buffer %p\n", pBuffer);
-    err = OMX_EmptyThisBuffer(hComponent, pBuffer);
+    OMX_EmptyThisBuffer(hComponent, pBuffer);
   }else {
     DEBUG(DEB_LEV_FULL_SEQ, "In %s Dropping Empty This buffer to Audio Mixer\n", __func__);
   }
@@ -554,7 +550,6 @@ OMX_ERRORTYPE audiomixerFillBufferDone(
   OMX_PTR pAppData,
   OMX_BUFFERHEADERTYPE* pBuffer) {
 
-  OMX_ERRORTYPE err;
   int i;
 
   DEBUG(DEB_LEV_FULL_SEQ, "Hi there, I am in the %s callback. Got buflen %i for buffer at 0x%p\n",
@@ -578,7 +573,7 @@ OMX_ERRORTYPE audiomixerFillBufferDone(
     pBuffer->nFilledLen = 0;
     /* Reschedule the fill buffer request */
     if(!bEOS[0] || !bEOS[1] || !bEOS[2] || !bEOS[3]) {
-    	err = OMX_FillThisBuffer(hComponent, pBuffer);
+    	OMX_FillThisBuffer(hComponent, pBuffer);
     } else {
     	DEBUG(DEB_LEV_FULL_SEQ, "In %s Dropping Fill This buffer to Audio Mixer\n", __func__);
     }

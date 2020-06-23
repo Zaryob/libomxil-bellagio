@@ -26,7 +26,7 @@
 
 #include "omxprioritytest.h"
 #include <string.h>
-#include <bellagio/extension_struct.h>
+#include <extension_struct.h>
 
 #define MAX_COMPONENTS 5
 #define TIMEOUT 500
@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
 	int i, j;
 	int num_of_components;
 	OMX_STATETYPE state;
-	char* componentName;
+	char* componentName=0;
 	int global_err = 0;
 	OMX_ERRORTYPE err;
 	OMX_PORT_PARAM_TYPE sParam;

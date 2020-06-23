@@ -7,7 +7,7 @@ EXTRA_DIST = libomxil-bellagio.spec
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libomxil-bellagio.pc
 
-docdir = $(DESTDIR)$(prefix)/share/doc/@PACKAGE@
+docdir = $(prefix)/share/doc/@PACKAGE@
 doc_DATA = README \
 	   ChangeLog \
 	   TODO

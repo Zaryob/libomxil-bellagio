@@ -32,7 +32,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#if defined(__linux__)
 #include <asm/unistd.h>
+#endif
 
 #ifdef ANDROID_COMPILATION
 #include <oscl_base_macros.h>

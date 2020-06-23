@@ -25,7 +25,7 @@
 */
 
 #include "omxvolcontroltest.h"
-#include <bellagio/extension_struct.h>
+#include <extension_struct.h>
 
 /* Application private date: should go in the component field (segs...) */
 appPrivateType* appPriv;
@@ -426,7 +426,6 @@ OMX_ERRORTYPE volcFillBufferDone(
   OMX_PTR pAppData,
   OMX_BUFFERHEADERTYPE* pBuffer) {
 
-  OMX_ERRORTYPE err;
   int i;
 
   DEBUG(DEB_LEV_FULL_SEQ, "Hi there, I am in the %s callback. Got buflen %i for buffer at 0x%p\n",
@@ -453,7 +452,7 @@ OMX_ERRORTYPE volcFillBufferDone(
   }
   /* Reschedule the fill buffer request */
   if(!bEOS) {
-    err = OMX_FillThisBuffer(hComponent, pBuffer);
+    OMX_FillThisBuffer(hComponent, pBuffer);
   }
   return OMX_ErrorNone;
 }

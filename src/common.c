@@ -33,6 +33,7 @@
 #include "common.h"
 
 #define REGISTRY_FILENAME ".omxregister"
+#define REGISTRY_DIR "/var/lib/libomxil-bellagio0/"
 
 #ifdef ANDROID_COMPILATION
 #define TMP_DATA_DIRECTORY "/data/omx/"
@@ -43,14 +44,27 @@
 /** @brief Get registry filename
  * This function returns the name of the registry file for the components loaded with the default component loader.
  */
-char* componentsRegistryGetFilename() {
+char* componentsRegistryGetFilename(void) {
+  return componentsRegistryGetFilenameCheck(0);
+}
+
+char* componentsRegistryGetFilenameCheck(int check_exists) {
   char *omxregistryfile = NULL;
   char *buffer;
+  struct stat sb;
 
   buffer=getenv("OMX_BELLAGIO_REGISTRY");
   if(buffer!=NULL&&*buffer!='\0') {
     omxregistryfile = strdup(buffer);
-    return omxregistryfile;
+    if (!check_exists||stat(omxregistryfile, &sb) == 0) {
+      return omxregistryfile;
+    } else {
+      if (omxregistryfile) {
+	free(omxregistryfile);
+	omxregistryfile=NULL;
+      }
+    }
+    return NULL;
   }
 
   buffer=getenv("XDG_DATA_HOME");
@@ -59,7 +73,14 @@ char* componentsRegistryGetFilename() {
     strcpy(omxregistryfile, buffer);
     strcat(omxregistryfile, "/");
     strcat(omxregistryfile, REGISTRY_FILENAME);
-    return omxregistryfile;
+    if (!check_exists||stat(omxregistryfile, &sb) == 0) {
+      return omxregistryfile;
+    } else {
+      if (omxregistryfile) {
+	free(omxregistryfile);
+	omxregistryfile=NULL;
+      }
+    }
   }
 
   buffer=getenv("HOME");
@@ -73,6 +94,17 @@ char* componentsRegistryGetFilename() {
     strcpy(omxregistryfile, TMP_DATA_DIRECTORY);
     strcat(omxregistryfile, REGISTRY_FILENAME);
   }
+  if (!check_exists||stat(omxregistryfile, &sb) == 0) {
+    return omxregistryfile;
+  } else {
+    if (omxregistryfile) {
+      free(omxregistryfile);
+      omxregistryfile=NULL;
+    }
+  }
+  omxregistryfile = malloc(strlen(REGISTRY_DIR) + strlen("registry") + 2);
+  strcpy(omxregistryfile, REGISTRY_DIR);
+  strcat(omxregistryfile, "registry");
   return omxregistryfile;
 }
 
@@ -171,7 +203,7 @@ int exists(const char* fname) {
 
 #ifdef COMMON_TEST
 int main (int argc, char*argv[]) {
-  printf (componentsRegistryGetFilename ());
+  printf (componentsRegistryGetFilename (1));
 }
 #endif
 

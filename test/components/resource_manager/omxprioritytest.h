@@ -36,7 +36,7 @@
 #include <OMX_Types.h>
 #include <OMX_Audio.h>
 
-#include <bellagio/tsemaphore.h>
+#include <tsemaphore.h>
 #include <user_debug_levels.h>
 
 /** Specification version*/

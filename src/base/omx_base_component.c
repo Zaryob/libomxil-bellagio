@@ -914,7 +914,7 @@ OSCL_EXPORT_REF OSCL_EXPORT_REF OMX_ERRORTYPE omx_base_component_GetParameter(
   if (ComponentParameterStructure == NULL) {
     return OMX_ErrorBadParameter;
   }
-  switch(nParamIndex) {
+  switch((int) nParamIndex) {
   case OMX_IndexParameterThreadsID:
 	    if ((err = checkHeader(ComponentParameterStructure, sizeof(OMX_PARAM_BELLAGIOTHREADS_ID))) != OMX_ErrorNone) {
 	      break;
@@ -1440,9 +1440,11 @@ void* compMessageHandlerFunction(void* param) {
   omx_base_component_PrivateType* omx_base_component_Private = (omx_base_component_PrivateType*)openmaxStandComp->pComponentPrivate;
   internalRequestMessageType *message;
 
+#if defined(__linux__)
   DEBUG(DEB_LEV_FUNCTION_NAME, "In %s for component %p\n", __func__, openmaxStandComp);
   omx_base_component_Private->bellagioThreads->nThreadMessageID = (long int)syscall(__NR_gettid);
   DEBUG(DEB_LEV_SIMPLE_SEQ, "In %s the thread ID is %i\n", __func__, (int)omx_base_component_Private->bellagioThreads->nThreadMessageID);
+#endif
 
   while(1){
     /* Wait for an incoming message */

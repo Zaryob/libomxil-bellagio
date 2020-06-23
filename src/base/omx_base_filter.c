@@ -26,7 +26,9 @@
 */
 
 #include <unistd.h>
+#if defined(__linux__)
 #include <asm/unistd.h>
+#endif
 #include <omxcore.h>
 
 #include "omx_base_filter.h"
@@ -94,9 +96,11 @@ void* omx_base_filter_BufferMgmtFunction (void* param) {
   OMX_BOOL isInputBufferNeeded=OMX_TRUE,isOutputBufferNeeded=OMX_TRUE;
   int inBufExchanged=0,outBufExchanged=0;
 
+#if defined(__linux__)
   omx_base_filter_Private->bellagioThreads->nThreadBufferMngtID = (long int)syscall(__NR_gettid);
   DEBUG(DEB_LEV_FUNCTION_NAME, "In %s of component %p\n", __func__, openmaxStandComp);
   DEBUG(DEB_LEV_SIMPLE_SEQ, "In %s the thread ID is %i\n", __func__, (int)omx_base_filter_Private->bellagioThreads->nThreadBufferMngtID);
+#endif
 
   DEBUG(DEB_LEV_FUNCTION_NAME, "In %s\n", __func__);
   /* checks if the component is in a state able to receive buffers */

@@ -32,6 +32,7 @@
 int makedir(const char *newdir);
 
 char *componentsRegistryGetFilename(void);
+char *componentsRegistryGetFilenameCheck(int check_exists);
 char* loadersRegistryGetFilename(char* registry_name);
 int exists(const char* fname);
 

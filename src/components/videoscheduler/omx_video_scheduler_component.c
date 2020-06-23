@@ -313,7 +313,7 @@ OMX_BOOL omx_video_scheduler_component_ClockPortHandleFunction(
   }
 
   /* do not send the data to sink and return back, if the clock is not running*/
-  if(!omx_video_scheduler_component_Private->eState==OMX_TIME_ClockStateRunning){
+  if(omx_video_scheduler_component_Private->eState!=OMX_TIME_ClockStateRunning){
     pInputBuffer->nFilledLen=0;
     SendFrame = OMX_FALSE;
     return SendFrame;
