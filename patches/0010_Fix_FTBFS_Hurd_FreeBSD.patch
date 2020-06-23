@@ -1,0 +1,90 @@
+From: Barry deFreese <bdefreese@debian.org>
+Subject: Fix FTBFS on Debian GNU/Hurd and kfreeBSD
+Bug-Debian: https://bugs.debian.org/681731
+Last-Update: 2016-11-11
+Index: libomxil-bellagio-0.9.3/src/base/omx_base_component.h
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/src/base/omx_base_component.h
++++ libomxil-bellagio-0.9.3/src/base/omx_base_component.h
+@@ -32,7 +32,9 @@
+ #include <string.h>
+ #include <unistd.h>
+ #include <errno.h>
++#if defined(__linux__)
+ #include <asm/unistd.h>
++#endif
+ 
+ #ifdef ANDROID_COMPILATION
+ #include <oscl_base_macros.h>
+Index: libomxil-bellagio-0.9.3/src/base/omx_base_component.c
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/src/base/omx_base_component.c
++++ libomxil-bellagio-0.9.3/src/base/omx_base_component.c
+@@ -1440,9 +1440,11 @@ void* compMessageHandlerFunction(void* p
+   omx_base_component_PrivateType* omx_base_component_Private = (omx_base_component_PrivateType*)openmaxStandComp->pComponentPrivate;
+   internalRequestMessageType *message;
+ 
++#if defined(__linux__)
+   DEBUG(DEB_LEV_FUNCTION_NAME, "In %s for component %p\n", __func__, openmaxStandComp);
+   omx_base_component_Private->bellagioThreads->nThreadMessageID = (long int)syscall(__NR_gettid);
+   DEBUG(DEB_LEV_SIMPLE_SEQ, "In %s the thread ID is %i\n", __func__, (int)omx_base_component_Private->bellagioThreads->nThreadMessageID);
++#endif
+ 
+   while(1){
+     /* Wait for an incoming message */
+Index: libomxil-bellagio-0.9.3/src/base/omx_base_filter.c
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/src/base/omx_base_filter.c
++++ libomxil-bellagio-0.9.3/src/base/omx_base_filter.c
+@@ -26,7 +26,9 @@
+ */
+ 
+ #include <unistd.h>
++#if defined(__linux__)
+ #include <asm/unistd.h>
++#endif
+ #include <omxcore.h>
+ 
+ #include "omx_base_filter.h"
+@@ -94,9 +96,11 @@ void* omx_base_filter_BufferMgmtFunction
+   OMX_BOOL isInputBufferNeeded=OMX_TRUE,isOutputBufferNeeded=OMX_TRUE;
+   int inBufExchanged=0,outBufExchanged=0;
+ 
++#if defined(__linux__)
+   omx_base_filter_Private->bellagioThreads->nThreadBufferMngtID = (long int)syscall(__NR_gettid);
+   DEBUG(DEB_LEV_FUNCTION_NAME, "In %s of component %p\n", __func__, openmaxStandComp);
+   DEBUG(DEB_LEV_SIMPLE_SEQ, "In %s the thread ID is %i\n", __func__, (int)omx_base_filter_Private->bellagioThreads->nThreadBufferMngtID);
++#endif
+ 
+   DEBUG(DEB_LEV_FUNCTION_NAME, "In %s\n", __func__);
+   /* checks if the component is in a state able to receive buffers */
+Index: libomxil-bellagio-0.9.3/src/base/omx_base_source.c
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/src/base/omx_base_source.c
++++ libomxil-bellagio-0.9.3/src/base/omx_base_source.c
+@@ -78,8 +78,10 @@ void* omx_base_source_BufferMgmtFunction
+   OMX_BOOL isOutputBufferNeeded = OMX_TRUE;
+   int outBufExchanged = 0;
+ 
++#if defined(__linux__)
+   omx_base_source_Private->bellagioThreads->nThreadBufferMngtID = (long int)syscall(__NR_gettid);
+   DEBUG(DEB_LEV_SIMPLE_SEQ, "In %s the thread ID is %i\n", __func__, (int)omx_base_source_Private->bellagioThreads->nThreadBufferMngtID);
++#endif
+ 
+   DEBUG(DEB_LEV_FUNCTION_NAME, "In %s \n", __func__);
+   while(omx_base_component_Private->state == OMX_StateIdle || omx_base_component_Private->state == OMX_StateExecuting ||
+Index: libomxil-bellagio-0.9.3/src/base/omx_base_sink.c
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/src/base/omx_base_sink.c
++++ libomxil-bellagio-0.9.3/src/base/omx_base_sink.c
+@@ -76,8 +76,10 @@ void* omx_base_sink_BufferMgmtFunction (
+   OMX_BOOL                        isInputBufferNeeded         = OMX_TRUE;
+   int                             inBufExchanged              = 0;
+ 
++#if defined(__linux__)
+   omx_base_sink_Private->bellagioThreads->nThreadBufferMngtID = (long int)syscall(__NR_gettid);
+   DEBUG(DEB_LEV_SIMPLE_SEQ, "In %s the thread ID is %i\n", __func__, (int)omx_base_sink_Private->bellagioThreads->nThreadBufferMngtID);
++#endif
+ 
+   DEBUG(DEB_LEV_FUNCTION_NAME, "In %s \n", __func__);
+   while(omx_base_component_Private->state == OMX_StateIdle || omx_base_component_Private->state == OMX_StateExecuting ||  omx_base_component_Private->state == OMX_StatePause ||

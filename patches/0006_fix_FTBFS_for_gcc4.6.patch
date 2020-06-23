@@ -1,0 +1,133 @@
+Description: Remove unused variables which caused errors with gcc-4.6 -Werror
+ These assignments wouldn't have helped with -Wunused-result anyway.
+Author: Colin Watson <cjwatson@ubuntu.com>
+Bug-Debian: https://bugs.debian.org/625367
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/831282
+Forwarded: no
+Last-Update: 2011-09-14
+
+---
+ src/omxregister.c                                 |    7 +++----
+ test/components/audio_effects/omxaudiomixertest.c |   11 +++--------
+ test/components/audio_effects/omxvolcontroltest.c |    3 +--
+ 3 files changed, 7 insertions(+), 14 deletions(-)
+
+Index: libomxil-bellagio-0.9.3/src/omxregister.c
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/src/omxregister.c
++++ libomxil-bellagio-0.9.3/src/omxregister.c
+@@ -172,7 +172,6 @@ static int buildComponentsList(FILE* omx
+ 	int index;
+ 	char* currentpath = componentspath;
+ 	char* actual;
+-		int err;
+ 	nameList *allNames = NULL;
+ 	nameList *currentName = NULL;
+ 	nameList *tempName = NULL;
+@@ -247,8 +246,8 @@ static int buildComponentsList(FILE* omx
+ 							stComponents[i]->multiResourceLevel = NULL;
+ 						}
+ 						fptr(stComponents);
+-						err = fwrite(lib_absolute_path, 1, strlen(lib_absolute_path), omxregistryfp);
+-						err = fwrite("\n", 1, 1, omxregistryfp);
++						fwrite(lib_absolute_path, 1, strlen(lib_absolute_path), omxregistryfp);
++						fwrite("\n", 1, 1, omxregistryfp);
+ 
+ 
+ 						for (i = 0; i<num_of_comp; i++) {
+@@ -323,7 +322,7 @@ static int buildComponentsList(FILE* omx
+ 							}
+ 							qualityString[0] = '\0';
+ 							strcat(buffer, "\n");
+-							err = fwrite(buffer, 1, strlen(buffer), omxregistryfp);
++							fwrite(buffer, 1, strlen(buffer), omxregistryfp);
+ 							ncomponents++;
+ 						}
+ 						for (i = 0; i < num_of_comp; i++) {
+Index: libomxil-bellagio-0.9.3/test/components/audio_effects/omxvolcontroltest.c
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/test/components/audio_effects/omxvolcontroltest.c
++++ libomxil-bellagio-0.9.3/test/components/audio_effects/omxvolcontroltest.c
+@@ -426,7 +426,6 @@ OMX_ERRORTYPE volcFillBufferDone(
+   OMX_PTR pAppData,
+   OMX_BUFFERHEADERTYPE* pBuffer) {
+ 
+-  OMX_ERRORTYPE err;
+   int i;
+ 
+   DEBUG(DEB_LEV_FULL_SEQ, "Hi there, I am in the %s callback. Got buflen %i for buffer at 0x%p\n",
+@@ -453,7 +452,7 @@ OMX_ERRORTYPE volcFillBufferDone(
+   }
+   /* Reschedule the fill buffer request */
+   if(!bEOS) {
+-    err = OMX_FillThisBuffer(hComponent, pBuffer);
++    OMX_FillThisBuffer(hComponent, pBuffer);
+   }
+   return OMX_ErrorNone;
+ }
+Index: libomxil-bellagio-0.9.3/test/components/audio_effects/omxaudiomixertest.c
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/test/components/audio_effects/omxaudiomixertest.c
++++ libomxil-bellagio-0.9.3/test/components/audio_effects/omxaudiomixertest.c
+@@ -88,7 +88,6 @@ int main(int argc, char** argv) {
+   int gain[4];
+   int argn_dec;
+   int index_files = 0, index_gain = 0;
+-  OMX_U32 srate=0,nchannel=0;
+   OMX_ERRORTYPE err;
+   char c;
+ 
+@@ -155,10 +154,8 @@ int main(int argc, char** argv) {
+           flagIsOutputExpected = 0;
+           flagOutputReceived = 1;
+         } else if (flagSampleRate) {
+-          srate = (int)atoi(argv[argn_dec]);
+           flagSampleRate = 0;
+         } else if (flagChannel) {
+-          nchannel = (int)atoi(argv[argn_dec]);
+           flagChannel = 0;
+         } else {
+         	if (index_files>3) {
+@@ -506,7 +503,6 @@ OMX_ERRORTYPE audiomixerEmptyBufferDone(
+   OMX_PTR pAppData,
+   OMX_BUFFERHEADERTYPE* pBuffer) {
+ 
+-  OMX_ERRORTYPE err;
+   int data_read;
+ 
+ 
+@@ -532,7 +528,7 @@ OMX_ERRORTYPE audiomixerEmptyBufferDone(
+       pBuffer->nFlags = OMX_BUFFERFLAG_EOS;
+       bEOS[pBuffer->nInputPortIndex]=OMX_TRUE;
+       DEBUG(DEB_LEV_SIMPLE_SEQ, "In %s Sending EOS for Stream %i\n", __func__, (int)pBuffer->nInputPortIndex);
+-      err = OMX_EmptyThisBuffer(hComponent, pBuffer);
++      OMX_EmptyThisBuffer(hComponent, pBuffer);
+       return OMX_ErrorNone;
+     }
+   } else {
+@@ -541,7 +537,7 @@ OMX_ERRORTYPE audiomixerEmptyBufferDone(
+   }
+   if(!bEOS[pBuffer->nInputPortIndex]) {
+     DEBUG(DEB_LEV_FULL_SEQ, "Empty buffer %p\n", pBuffer);
+-    err = OMX_EmptyThisBuffer(hComponent, pBuffer);
++    OMX_EmptyThisBuffer(hComponent, pBuffer);
+   }else {
+     DEBUG(DEB_LEV_FULL_SEQ, "In %s Dropping Empty This buffer to Audio Mixer\n", __func__);
+   }
+@@ -554,7 +550,6 @@ OMX_ERRORTYPE audiomixerFillBufferDone(
+   OMX_PTR pAppData,
+   OMX_BUFFERHEADERTYPE* pBuffer) {
+ 
+-  OMX_ERRORTYPE err;
+   int i;
+ 
+   DEBUG(DEB_LEV_FULL_SEQ, "Hi there, I am in the %s callback. Got buflen %i for buffer at 0x%p\n",
+@@ -578,7 +573,7 @@ OMX_ERRORTYPE audiomixerFillBufferDone(
+     pBuffer->nFilledLen = 0;
+     /* Reschedule the fill buffer request */
+     if(!bEOS[0] || !bEOS[1] || !bEOS[2] || !bEOS[3]) {
+-    	err = OMX_FillThisBuffer(hComponent, pBuffer);
++    	OMX_FillThisBuffer(hComponent, pBuffer);
+     } else {
+     	DEBUG(DEB_LEV_FULL_SEQ, "In %s Dropping Fill This buffer to Audio Mixer\n", __func__);
+     }

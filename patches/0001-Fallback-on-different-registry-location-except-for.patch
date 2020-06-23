@@ -1,0 +1,126 @@
+From: =?utf-8?q?Marc-Andr=C3=A9=20Lureau?= <marcandre.lureau@gmail.com>
+Date: Wed, 25 Jun 2008 20:20:53 +0300
+Subject: [PATCH] Fallback on different registry location (except for OMX_BELLAGIO_REGISTRY)
+Index: libomxil-bellagio/src/common.c
+===================================================================
+--- libomxil-bellagio.orig/src/common.c	2011-06-02 11:27:40.758388019 +0800
++++ libomxil-bellagio/src/common.c	2011-06-02 11:27:59.818030905 +0800
+@@ -33,6 +33,7 @@
+ #include "common.h"
+ 
+ #define REGISTRY_FILENAME ".omxregister"
++#define REGISTRY_DIR "/var/lib/libomxil-bellagio0/"
+ 
+ #ifdef ANDROID_COMPILATION
+ #define TMP_DATA_DIRECTORY "/data/omx/"
+@@ -43,14 +44,27 @@
+ /** @brief Get registry filename
+  * This function returns the name of the registry file for the components loaded with the default component loader.
+  */
+-char* componentsRegistryGetFilename() {
++char* componentsRegistryGetFilename(void) {
++  return componentsRegistryGetFilenameCheck(0);
++}
++
++char* componentsRegistryGetFilenameCheck(int check_exists) {
+   char *omxregistryfile = NULL;
+   char *buffer;
++  struct stat sb;
+ 
+   buffer=getenv("OMX_BELLAGIO_REGISTRY");
+   if(buffer!=NULL&&*buffer!='\0') {
+     omxregistryfile = strdup(buffer);
+-    return omxregistryfile;
++    if (!check_exists||stat(omxregistryfile, &sb) == 0) {
++      return omxregistryfile;
++    } else {
++      if (omxregistryfile) {
++	free(omxregistryfile);
++	omxregistryfile=NULL;
++      }
++    }
++    return NULL;
+   }
+ 
+   buffer=getenv("XDG_DATA_HOME");
+@@ -59,7 +73,14 @@
+     strcpy(omxregistryfile, buffer);
+     strcat(omxregistryfile, "/");
+     strcat(omxregistryfile, REGISTRY_FILENAME);
+-    return omxregistryfile;
++    if (!check_exists||stat(omxregistryfile, &sb) == 0) {
++      return omxregistryfile;
++    } else {
++      if (omxregistryfile) {
++	free(omxregistryfile);
++	omxregistryfile=NULL;
++      }
++    }
+   }
+ 
+   buffer=getenv("HOME");
+@@ -73,6 +94,17 @@
+     strcpy(omxregistryfile, TMP_DATA_DIRECTORY);
+     strcat(omxregistryfile, REGISTRY_FILENAME);
+   }
++  if (!check_exists||stat(omxregistryfile, &sb) == 0) {
++    return omxregistryfile;
++  } else {
++    if (omxregistryfile) {
++      free(omxregistryfile);
++      omxregistryfile=NULL;
++    }
++  }
++  omxregistryfile = malloc(strlen(REGISTRY_DIR) + strlen("registry") + 2);
++  strcpy(omxregistryfile, REGISTRY_DIR);
++  strcat(omxregistryfile, "registry");
+   return omxregistryfile;
+ }
+ 
+@@ -171,7 +203,7 @@
+ 
+ #ifdef COMMON_TEST
+ int main (int argc, char*argv[]) {
+-  printf (componentsRegistryGetFilename ());
++  printf (componentsRegistryGetFilename (1));
+ }
+ #endif
+ 
+Index: libomxil-bellagio/src/common.h
+===================================================================
+--- libomxil-bellagio.orig/src/common.h	2011-06-02 11:27:40.758388019 +0800
++++ libomxil-bellagio/src/common.h	2011-06-02 11:27:59.818030905 +0800
+@@ -32,6 +32,7 @@
+ int makedir(const char *newdir);
+ 
+ char *componentsRegistryGetFilename(void);
++char *componentsRegistryGetFilenameCheck(int check_exists);
+ char* loadersRegistryGetFilename(char* registry_name);
+ int exists(const char* fname);
+ 
+Index: libomxil-bellagio/src/core_extensions/OMXCoreRMExt.c
+===================================================================
+--- libomxil-bellagio.orig/src/core_extensions/OMXCoreRMExt.c	2011-06-02 11:27:40.762387944 +0800
++++ libomxil-bellagio/src/core_extensions/OMXCoreRMExt.c	2011-06-02 11:27:59.818030905 +0800
+@@ -161,7 +161,7 @@
+ 	DEBUG(DEB_LEV_FUNCTION_NAME, "In %s\n", __func__);
+ 	qualityList = NULL;
+ 
+-	registry_filename = componentsRegistryGetFilename();
++	registry_filename = componentsRegistryGetFilenameCheck(1);
+ 	omxregistryfp = fopen(registry_filename, "r");
+ 	if (omxregistryfp == NULL){
+ 		DEBUG(DEB_LEV_ERR, "Cannot open OpenMAX registry file %s\n", registry_filename);
+Index: libomxil-bellagio/src/st_static_component_loader.c
+===================================================================
+--- libomxil-bellagio.orig/src/st_static_component_loader.c	2011-06-02 11:27:40.762387944 +0800
++++ libomxil-bellagio/src/st_static_component_loader.c	2011-06-02 11:27:59.818030905 +0800
+@@ -88,7 +88,7 @@
+ 
+   DEBUG(DEB_LEV_FUNCTION_NAME, "In %s\n", __func__);
+ 
+-  registry_filename = componentsRegistryGetFilename();
++  registry_filename = componentsRegistryGetFilenameCheck(1);
+   omxregistryfp = fopen(registry_filename, "r");
+   if (omxregistryfp == NULL){
+     DEBUG(DEB_LEV_ERR, "Cannot open OpenMAX registry file %s\n", registry_filename);

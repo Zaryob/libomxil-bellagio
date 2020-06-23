@@ -1,0 +1,141 @@
+Description: Fix for building test components
+ Change the include/lib path to source directory 
+Author: Kunal Goel <kunal.goel@linaro.org>
+Last-Update: 2011-02-06
+Index: libomxil-bellagio-0.9.3/test/components/audio_effects/Makefile.am
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/test/components/audio_effects/Makefile.am
++++ libomxil-bellagio-0.9.3/test/components/audio_effects/Makefile.am
+@@ -1,7 +1,7 @@
+ check_PROGRAMS = omxvolcontroltest omxaudiomixertest
+ 
+-bellagio_LDADD = -lomxil-bellagio
+-common_CFLAGS = -I$(top_srcdir)/test/components/common -I$(includedir)
++bellagio_LDADD = $(top_builddir)/src/libomxil-bellagio.la
++common_CFLAGS = -I$(top_builddir)/test/components/common -I$(top_builddir)/include -I$(top_builddir)/src
+ 
+ omxvolcontroltest_SOURCES = omxvolcontroltest.c omxvolcontroltest.h
+ omxvolcontroltest_LDADD = $(bellagio_LDADD) -lpthread 
+Index: libomxil-bellagio-0.9.3/test/components/audio_effects/omxaudiomixertest.h
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/test/components/audio_effects/omxaudiomixertest.h
++++ libomxil-bellagio-0.9.3/test/components/audio_effects/omxaudiomixertest.h
+@@ -41,7 +41,7 @@
+ #include <OMX_Types.h>
+ #include <OMX_Audio.h>
+ 
+-#include <bellagio/tsemaphore.h>
++#include <tsemaphore.h>
+ #include <user_debug_levels.h>
+ 
+ /** Specification version*/
+Index: libomxil-bellagio-0.9.3/test/components/audio_effects/omxvolcontroltest.c
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/test/components/audio_effects/omxvolcontroltest.c
++++ libomxil-bellagio-0.9.3/test/components/audio_effects/omxvolcontroltest.c
+@@ -25,7 +25,7 @@
+ */
+ 
+ #include "omxvolcontroltest.h"
+-#include <bellagio/extension_struct.h>
++#include <extension_struct.h>
+ 
+ /* Application private date: should go in the component field (segs...) */
+ appPrivateType* appPriv;
+Index: libomxil-bellagio-0.9.3/test/components/audio_effects/omxvolcontroltest.h
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/test/components/audio_effects/omxvolcontroltest.h
++++ libomxil-bellagio-0.9.3/test/components/audio_effects/omxvolcontroltest.h
+@@ -40,7 +40,7 @@
+ #include <OMX_Types.h>
+ #include <OMX_Audio.h>
+ 
+-#include <bellagio/tsemaphore.h>
++#include <tsemaphore.h>
+ #include <user_debug_levels.h>
+ 
+ /** Specification version*/
+Index: libomxil-bellagio-0.9.3/test/components/resource_manager/Makefile.am
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/test/components/resource_manager/Makefile.am
++++ libomxil-bellagio-0.9.3/test/components/resource_manager/Makefile.am
+@@ -1,7 +1,7 @@
+ check_PROGRAMS = omxrmtest omxprioritytest
+ 
+-bellagio_LDADD = -lomxil-bellagio
+-common_CFLAGS = -I$(top_srcdir)/test/components/common -I$(includedir)
++bellagio_LDADD = $(top_builddir)/src/libomxil-bellagio.la
++common_CFLAGS = -I$(top_builddir)/test/components/common -I$(top_builddir)/include -I$(top_builddir)/src
+ 
+ omxrmtest_SOURCES = omxrmtest.c omxrmtest.h
+ omxrmtest_LDADD = $(bellagio_LDADD) -lpthread
+Index: libomxil-bellagio-0.9.3/test/components/resource_manager/omxprioritytest.c
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/test/components/resource_manager/omxprioritytest.c
++++ libomxil-bellagio-0.9.3/test/components/resource_manager/omxprioritytest.c
+@@ -26,7 +26,7 @@
+ 
+ #include "omxprioritytest.h"
+ #include <string.h>
+-#include <bellagio/extension_struct.h>
++#include <extension_struct.h>
+ 
+ #define MAX_COMPONENTS 5
+ #define TIMEOUT 500
+@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
+ 	int i, j;
+ 	int num_of_components;
+ 	OMX_STATETYPE state;
+-	char* componentName;
++	char* componentName=0;
+ 	int global_err = 0;
+ 	OMX_ERRORTYPE err;
+ 	OMX_PORT_PARAM_TYPE sParam;
+Index: libomxil-bellagio-0.9.3/test/components/resource_manager/omxprioritytest.h
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/test/components/resource_manager/omxprioritytest.h
++++ libomxil-bellagio-0.9.3/test/components/resource_manager/omxprioritytest.h
+@@ -36,7 +36,7 @@
+ #include <OMX_Types.h>
+ #include <OMX_Audio.h>
+ 
+-#include <bellagio/tsemaphore.h>
++#include <tsemaphore.h>
+ #include <user_debug_levels.h>
+ 
+ /** Specification version*/
+Index: libomxil-bellagio-0.9.3/test/components/resource_manager/omxrmtest.c
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/test/components/resource_manager/omxrmtest.c
++++ libomxil-bellagio-0.9.3/test/components/resource_manager/omxrmtest.c
+@@ -26,7 +26,7 @@
+ 
+ #include "omxrmtest.h"
+ #include <string.h>
+-#include <bellagio/extension_struct.h>
++#include <extension_struct.h>
+ 
+ #define MAX_COMPONENTS 5
+ #define TIMEOUT 500
+@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
+ 	int i, j;
+ 	int num_of_components;
+ 	OMX_STATETYPE state;
+-	char* componentName;
++	char* componentName=0;
+ 	int global_err = 0;
+ 	OMX_ERRORTYPE err;
+ 	OMX_PORT_PARAM_TYPE sParam;
+Index: libomxil-bellagio-0.9.3/test/components/resource_manager/omxrmtest.h
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/test/components/resource_manager/omxrmtest.h
++++ libomxil-bellagio-0.9.3/test/components/resource_manager/omxrmtest.h
+@@ -36,7 +36,7 @@
+ #include <OMX_Types.h>
+ #include <OMX_Audio.h>
+ 
+-#include <bellagio/tsemaphore.h>
++#include <tsemaphore.h>
+ #include <user_debug_levels.h>
+ 
+ /** Specification version*/

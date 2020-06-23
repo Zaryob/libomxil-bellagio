@@ -1,0 +1,28 @@
+Description: Fix Off-by-one buffer overrun in BOSA_ST_InitComponentLoader()
+ BOSA_ST_InitComponentLoader is reading from the empty file
+ /var/lib/libomxil-bellagio0/registry.  It's not checking the return of
+ fgetc() for EOF, so reads EOF in a loop MAX_LINE_LENGTH times, then overruns
+ the buffer when it puts a '\0' on the end.
+ .
+ This patch handles the EOF case.
+Author: Ying-Chun Liu (PaulLiu) <paulliu@debian.org>
+Bug-Debian: https://bugs.debian.org/741541
+Last-Update: 2016-11-11
+Index: libomxil-bellagio-0.9.3/src/st_static_component_loader.c
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/src/st_static_component_loader.c
++++ libomxil-bellagio-0.9.3/src/st_static_component_loader.c
+@@ -105,8 +105,11 @@ OMX_ERRORTYPE BOSA_ST_InitComponentLoade
+ 
+   while(1) {
+ 	  index_readline = 0;
+-	  while(index_readline < MAX_LINE_LENGTH) {
+-		  *(line+index_readline) = fgetc(omxregistryfp);
++	  while(index_readline+1 < MAX_LINE_LENGTH) {
++		  int c1;
++		  c1 = fgetc(omxregistryfp);
++		  if (c1 == EOF) break;
++		  *(line+index_readline) = c1;
+ 		  if ((*(line+index_readline) == '\n') || (*(line+index_readline) == '\0')) {
+ 			  break;
+ 		  }

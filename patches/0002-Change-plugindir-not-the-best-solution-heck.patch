@@ -1,0 +1,28 @@
+From b30e43e4a214a38a0475e09e011faf617df5f726 Mon Sep 17 00:00:00 2001
+From: =?utf-8?q?Marc-Andr=C3=A9=20Lureau?= <marcandre.lureau@gmail.com>
+Date: Fri, 27 Jun 2008 19:31:25 +0300
+Subject: [PATCH] Change plugindir, not the best solution, heck
+
+---
+ configure              |    4 ++--
+ m4/ax_set_plugindir.m4 |    4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+Index: libomxil-bellagio/m4/ax_set_plugindir.m4
+===================================================================
+--- libomxil-bellagio.orig/m4/ax_set_plugindir.m4	2011-06-02 11:27:40.754388094 +0800
++++ libomxil-bellagio/m4/ax_set_plugindir.m4	2011-06-02 11:28:48.249123491 +0800
+@@ -6,11 +6,11 @@
+ AC_DEFUN([AX_SET_PLUGINDIR],
+ [
+   dnl define location of plugin directory
+-  AS_AC_EXPAND(PLUGINDIR, ${libdir}/bellagio)
++  AS_AC_EXPAND(PLUGINDIR, ${libdir}/libomxil-bellagio0)
+   AC_DEFINE_UNQUOTED(PLUGINDIR, "$PLUGINDIR",
+     [directory where plugins are located])
+   AC_MSG_NOTICE([Using $PLUGINDIR as the components install location])
+ 
+   dnl plugin directory configure-time variable
+-  AC_SUBST([plugindir], '[${libdir}/bellagio]')
++  AC_SUBST([plugindir], '[${libdir}/libomxil-bellagio0]')
+ ])

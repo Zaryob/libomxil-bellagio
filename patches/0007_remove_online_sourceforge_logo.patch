@@ -1,0 +1,12 @@
+Index: libomxil-bellagio-0.9.3/doc/footer_SF.html.in
+===================================================================
+--- libomxil-bellagio-0.9.3.orig/doc/footer_SF.html.in	2011-01-12 15:53:26.000000000 +0800
++++ libomxil-bellagio-0.9.3/doc/footer_SF.html.in	2014-02-20 03:36:14.051925754 +0800
+@@ -4,6 +4,6 @@
+ <a href="http://www.doxygen.org/index.html">
+ <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1 </small>
+ <br>
+-<a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=160680&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
++<a href="http://sourceforge.net"><img src="" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+ </body>
+ </html>

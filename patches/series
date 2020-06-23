@@ -1,0 +1,11 @@
+0001-Fallback-on-different-registry-location-except-for.patch
+0002-Change-plugindir-not-the-best-solution-heck.patch
+0003_fix_docdir.patch
+0004_fix_FTBFS_for_natty.patch
+0005_test_build.patch
+0006_fix_FTBFS_for_gcc4.6.patch
+0007_remove_online_sourceforge_logo.patch
+0008_fix_FTBFS_for_gcc5.patch
+0009_fix_BOSA_ST_InitComponentLoader_buffer_overrun.patch
+0010_Fix_FTBFS_Hurd_FreeBSD.patch
+0011_makefile_dependencies.patch
